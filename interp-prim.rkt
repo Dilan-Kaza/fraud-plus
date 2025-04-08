@@ -48,7 +48,8 @@
      [(list v1) (+ v1 0)]
      [(list v1 v2) (+ v1 v2)]
      [(list v1 v2 r ...) (interp-primN op (cons (+ v1 v2) r))]
-     [_ 'err])]))
+     [_ 'err])]
+    [_ 'err]))
 
 ;; Any -> Boolean
 (define (codepoint? v)

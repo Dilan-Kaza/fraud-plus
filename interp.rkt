@@ -76,7 +76,8 @@
        ['err 'err]
        [v (match (interp*-env es r)
             ['err 'err]
-            [vs (cons v vs)])])]))
+            [vs (cons v vs)])])]
+    [_ 'err]))
 
 (define (interp-cond cs e r)
   (match cs
@@ -87,7 +88,8 @@
 (define (interp-case ev cs el r)
   (match cs
   ['() (interp-env el r)]
-  [(list (Clause ls e) t ...) (if (member (interp-env ev r) ls) (interp-env e r) (interp-case ev t el r))]))
+  [(list (Clause ls e) t ...) (if (member (interp-env ev r) ls) (interp-env e r) (interp-case ev t el r))]
+  [_ 'err]))
 
 (define (interp-let x e1 e2 r)
   (interp-env e2 (ext-all r x (interp*-env e1 r))))

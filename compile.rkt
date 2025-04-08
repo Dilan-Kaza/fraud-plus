@@ -139,22 +139,24 @@
                (Label l1)
                (compile-cond a e c)
                (Label l2)))]
-    ['() (compile-e e c)]))
+    ['() (compile-e e c)]
+    [_ (Jmp 'err)]))
 
 (define (compile-case e1 cs e2 c)
   (match cs
-            [(list (Clause lst e) a ...)
-             (let ((l1 (gensym 'case))
-                   (l2 (gensym 'case)))
-                  (append (seq (compile-e e1 c)
-                               (Mov r9 rax))
+    [(list (Clause lst e) a ...)
+       (let ((l1 (gensym 'case))
+             (l2 (gensym 'case)))
+             (append (seq (compile-e e1 c)
+                          (Mov r9 rax))    
                           (compile-contains lst l1 c)
                           (seq (compile-case e1 a e2 c)
                                (Jmp l2)
                                (Label l1)
                                (compile-e e c)
                                (Label l2))))]
-            ['() (compile-e e2 c)]))
+    ['() (compile-e e2 c)]
+    [_ (Jmp 'err)]))
   
 (define (compile-contains lst jmppnt c)
   (match lst
@@ -163,7 +165,8 @@
                                  (Cmp rax r9)
                                  (Je jmppnt))
                             (compile-contains t jmppnt c))]
-      ['() '()]))
+      ['() '()]
+      [_ (Jmp 'err)]))
 
 
 ;; Id Expr Expr CEnv -> Asm
@@ -176,28 +179,36 @@
        (Add rsp 8)))
 
 (define (compile-let x e1 e2 c)
-  (let ([c+ (add-in-order x c)] [k (count-8 x)]) (seq (compile-e* e1 c)
+  (if (= (length x) (length e1))
+      (let ([c+ (add-in-order x c)] [k (count-8 x)]) (seq (compile-e* e1 c)
        (compile-e e2 c+)
-       (Add rsp k))))
+       (Add rsp k)))
+      (Jmp 'err)))
 
 (define (add-in-order x c)
   (match x
     ['() c]
-    [(list h t ...) (add-in-order t (cons h c))]))
+    [(list h t ...) (add-in-order t (cons h c))]
+    [_ (Jmp 'err)]))
 (define (count-8 x)
   (match x
     ['() 0]
-    [(list h t ...) (+ 8 (count-8 t))]))
+    [(list h t ...) (+ 8 (count-8 t))]
+    [_ (Jmp 'err)]))
 
 (define (compile-let* xs es e2 c)
-  (match xs
-  ['() (compile-e e2 c)]
-  [(list x t ...)
-   (match es
-    [(list e1 et ...)(seq (compile-e e1 c)
-       (Push rax)
-       (compile-let t et e2 (cons x c))
-       (Add rsp 8))])]))
+  (if (= (length xs) (length es))
+      (match xs
+        ['() (compile-e e2 c)]
+        [(list x t ...)
+        (match es
+          [(list e1 et ...)(seq (compile-e e1 c)
+            (Push rax)
+            (compile-let t et e2 (cons x c))
+            (Add rsp 8))]
+          [_ (Jmp 'err)])]
+        [_ (Jmp 'err)])
+      (Jmp 'err)))
 
 ;; Id CEnv -> Integer
 (define (lookup x cenv)
