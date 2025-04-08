@@ -208,7 +208,7 @@
           [(list e1 et ...)
             (seq (compile-e e1 c)
                  (Push rax)
-                 (compile-let t et e2 (cons x c))
+                 (compile-let* t et e2 (cons x c))
                  (Add rsp 8))]
           [_ (Jmp 'err)])]
         [_ (Jmp 'err)])
