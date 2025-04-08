@@ -81,14 +81,28 @@
 
 (define (interp-cond cs e r)
   (match cs
-  [(list (Clause b v) t ...) (if (interp-env b r) (interp-env v r) (interp-cond t e r))]
+  [(list (Clause b v) t ...)
+    (match (interp-env b r)
+      ['err 'err]
+      [b+ (match (interp-env v r)
+            ['err 'err]
+            [v+ (match (interp-cond t e r)
+                  ['err 'err]
+                  [t+ (if b+ v+ t+)])])])]
   ['() (interp-env e r)]
   [_ 'err]))
 
 (define (interp-case ev cs el r)
   (match cs
   ['() (interp-env el r)]
-  [(list (Clause ls e) t ...) (if (member (interp-env ev r) ls) (interp-env e r) (interp-case ev t el r))]
+  [(list (Clause ls e) t ...)
+    (match (interp-env ev r) 
+      ['err 'err]
+      [ev+  (match (interp-env e r)
+              ['err 'err]
+              [e+ (match (interp-case ev t el r)
+                ['err 'err]
+                [el+ (if (member ev+ ls) e+ el+)])])])]
   [_ 'err]))
 
 (define (interp-let x e1 e2 r)
