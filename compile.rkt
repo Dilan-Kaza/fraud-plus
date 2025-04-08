@@ -90,9 +90,8 @@
     [(list e t ...)
      (seq (Push rax)
           (compile-e e (cons #f c))
-          (Pop r9)
-          (assert-integer r9)
           (assert-integer rax)
+          (Pop r9)
           (Add rax r9)
           (compile-+N t c))]
     [_ (seq (Jmp 'err))]))
@@ -193,7 +192,7 @@
     ['() c]
     [(list h t ...) (add-in-order t (cons h c))]
     [_ (Jmp 'err)]))
-    
+
 (define (count-8 x)
   (match x
     ['() 0]
