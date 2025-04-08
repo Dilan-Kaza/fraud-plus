@@ -37,9 +37,10 @@
              ['err 'err]
              [v2 (interp-prim2 p v1 v2)])])]
     ;; TODO: implement n-ary primitive
-    [(PrimN p es) (match (interp*-env es r) 
-                        ['err 'err]
-                        [es+ (interp-primN p es+)])]
+    [(PrimN p es)
+      (match (interp*-env es r) 
+          ['err 'err]
+          [es+ (interp-primN p es+)])]
     [(If e0 e1 e2)
      (match (interp-env e0 r)
        ['err 'err]
