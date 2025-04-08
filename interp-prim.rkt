@@ -49,7 +49,10 @@
     ['+
      (match vs
      ['() acc]
-     [(list (? integer? v) t ...) (interp-primN-helper '+ t (+ v acc))]
+     [(list (? integer? v) t ...)
+       (match (interp-primN-helper '+ t (+ v acc))
+        ['err 'err]
+        [v v])]
      [_ 'err])]
     [_ 'err]))
 
