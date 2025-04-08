@@ -35,7 +35,6 @@
     [(list '= (? integer?) (? integer?)) (= v1 v2)]
     ;; TODO: Make + take any number of arguments, see hint below.
     ;; Once that works, you can remove this code:
-    [(list '+ (? integer?) (? integer?)) (+ v1 v2)]
     [_ 'err]))
 
 ;; HINT: You could use a function like the following and call it from interp.
