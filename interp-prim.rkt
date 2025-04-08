@@ -20,6 +20,8 @@
     [(list 'write-byte    (? byte?))      (write-byte v)]
     [(list 'eof-object? v)                (eof-object? v)]
     ;; TODO: handle -, abs, integer?, etc.
+    [(list 'abs (? integer?)) (abs v)]
+    [(list 'not v) (not v)]
     [(list '- (? integer?))               (- v)]
     [(list 'integer? v)                     (integer? v)]
     [(list 'boolean? v)                     (boolean? v)]
