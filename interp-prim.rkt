@@ -40,14 +40,14 @@
 
 ;; OpN [Listof Value] -> Answer
 (define (interp-primN op vs)
+  (interp-primN-helper op vs 0))
+
+(define (interp-primN-helper op vs acc)
   (match op
     ['+
-     ;; TODO: implement n-ary +
      (match vs
-     ['() 0]
-     [(list v1) (+ v1 0)]
-     [(list v1 v2) (+ v1 v2)]
-     [(list v1 v2 r ...) (interp-primN op (cons (+ v1 v2) r))]
+     ['() acc]
+     [(list (? integer? v) t ...) (interp-primN-helper '+ t (+ v acc))]
      [_ 'err])]
     [_ 'err]))
 
