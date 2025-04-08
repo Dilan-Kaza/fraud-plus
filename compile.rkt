@@ -91,6 +91,8 @@
      (seq (Push rax)
           (compile-e e (cons #f c))
           (Pop r9)
+          (assert-integer r9)
+          (assert-integer rax)
           (Add rax r9)
           (compile-+N t c))]
     [_ (seq (Jmp 'err))]))
@@ -165,8 +167,8 @@
                                  (Cmp rax r9)
                                  (Je jmppnt))
                             (compile-contains t jmppnt c))]
-      ['() '()]
-      [_ (Jmp 'err)]))
+    ['() '()]
+    [_ (Jmp 'err)]))
 
 
 ;; Id Expr Expr CEnv -> Asm
@@ -180,9 +182,10 @@
 
 (define (compile-let x e1 e2 c)
   (if (= (length x) (length e1))
-      (let ([c+ (add-in-order x c)] [k (count-8 x)]) (seq (compile-e* e1 c)
-       (compile-e e2 c+)
-       (Add rsp k)))
+      (let ([c+ (add-in-order x c)] [k (count-8 x)])
+            (seq (compile-e* e1 c)
+                 (compile-e e2 c+)
+                 (Add rsp k)))
       (Jmp 'err)))
 
 (define (add-in-order x c)
@@ -190,6 +193,7 @@
     ['() c]
     [(list h t ...) (add-in-order t (cons h c))]
     [_ (Jmp 'err)]))
+    
 (define (count-8 x)
   (match x
     ['() 0]
@@ -202,10 +206,11 @@
         ['() (compile-e e2 c)]
         [(list x t ...)
         (match es
-          [(list e1 et ...)(seq (compile-e e1 c)
-            (Push rax)
-            (compile-let t et e2 (cons x c))
-            (Add rsp 8))]
+          [(list e1 et ...)
+            (seq (compile-e e1 c)
+                 (Push rax)
+                 (compile-let t et e2 (cons x c))
+                 (Add rsp 8))]
           [_ (Jmp 'err)])]
         [_ (Jmp 'err)])
       (Jmp 'err)))
