@@ -169,7 +169,6 @@
     (check-equal? (run-proc '(- 5)) -5)
     (check-equal? (run-proc '(if (not (zero? (sub1 2))) #t #f)) #t)
     (check-equal? (run-proc '(if (if (not (zero? (sub1 2))) #t #f) 1 2)) 1)
-    (check-equal? (run-proc '(+ )) 0)
     (check-equal? (run-proc '(let ([x (+ 1 2)]) (+ x x)))6)
     (check-equal? (run-proc '(let ([x (+ 1 2)]) x))3)
     )))

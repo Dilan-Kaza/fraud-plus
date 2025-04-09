@@ -111,10 +111,10 @@
 (define (interp-let x e1 e2 r)
   (if (= (length x) (length e1))
       (match (interp*-env e1 r)
-        ['err 'err]
         [e1+ (match (ext-all r x e1+) 
                 ['err 'err]
-                [r+ (interp-env e2 r+)])])
+                [r+ (interp-env e2 r+)])]
+        [_ 'err])
       ('err)))
 
 (define (interp-let* xs es e r)
