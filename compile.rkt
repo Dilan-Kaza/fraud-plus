@@ -149,24 +149,24 @@
     [(list (Clause lst e) a ...)
        (let ((l1 (gensym 'case))
              (l2 (gensym 'case)))
-             (append (seq (compile-e e1 c)
-                          (Mov r9 rax))    
-                          (compile-contains lst l1 c)
-                          (seq (compile-case e1 a e2 c)
-                               (Jmp l2)
-                               (Label l1)
-                               (compile-e e c)
-                               (Label l2))))]
+             (seq (compile-e e1 c)
+                  (Mov r9 rax)    
+                  (compile-contains lst l1 c)
+                  (compile-case e1 a e2 c)
+                  (Jmp l2)
+                  (Label l1)
+                  (compile-e e c)
+                  (Label l2)))]
     ['() (compile-e e2 c)]
     [_ (Jmp 'err)]))
   
 (define (compile-contains lst jmppnt c)
   (match lst
     [(list e t ...)
-                    (append (seq (compile-value e)
-                                 (Cmp rax r9)
-                                 (Je jmppnt))
-                            (compile-contains t jmppnt c))]
+      (seq (compile-value e)
+            (Cmp rax r9)
+            (Je jmppnt)
+            (compile-contains t jmppnt c))]
     ['() '()]
     [_ (Jmp 'err)]))
 
