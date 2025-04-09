@@ -88,7 +88,8 @@
   (match es
     ['() '()]
     [(list e t ...)
-     (seq (Push rax)
+     (seq (assert-integer rax)
+          (Push rax)
           (compile-e e (cons #f c))
           (assert-integer rax)
           (Pop r9)
