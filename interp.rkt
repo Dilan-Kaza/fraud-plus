@@ -120,14 +120,15 @@
 (define (interp-let* xs es e r)
   (if (= (length xs) (length es))
       (match xs
-       ['err 'err]
        ['() (interp-env e r)]
        [(list xh xt ...)
         (match es
           [(list eh et ...)
             (match (interp-env eh r)
                 ['err 'err]
-                [eh+ (interp-let* xt et e (ext r xh eh+))])])])
+                [eh+  (interp-let* xt et e (ext r xh eh+))])]
+          [_ 'err])]
+        [_ 'err])
       ('err)))
 
 ;; Env Id -> Value
@@ -145,10 +146,10 @@
 
 (define (ext-all r x v)
   (match x
-  ['err 'err]
   ['() r]
   [(list xh xt ...)
    (match v
     ['err 'err]
     [(list vh vt ...) (ext-all (ext r xh vh) xt vt)]
-    [_ 'err])]))
+    [_ 'err])]
+  [_ 'err]))
