@@ -109,14 +109,17 @@
   [_ 'err]))
 
 (define (interp-let x e1 e2 r)
-  (match (interp*-env e1 r)
-   ['err 'err]
-   [e1+ (match (ext-all r x e1+) 
-          ['err 'err]
-          [r+ (interp-env e2 r+)])]))
+  (if (= (length x) (length e1))
+      (match (interp*-env e1 r)
+      ['err 'err]
+      [e1+ (match (ext-all r x e1+) 
+              ['err 'err]
+              [r+ (interp-env e2 r+)])])
+      ('err)))
 
 (define (interp-let* xs es e r)
-  (match xs
+  (if (= (length xs) (length es))
+      (match xs
        ['err 'err]
        ['() (interp-env e r)]
        [(list xh xt ...)
@@ -124,7 +127,8 @@
           [(list eh et ...)
             (match (interp-env eh r)
                 ['err 'err]
-                [eh+ (interp-let* xt et e (ext r xh eh+))])])]))
+                [eh+ (interp-let* xt et e (ext r xh eh+))])])])
+      ('err)))
 
 ;; Env Id -> Value
 (define (lookup r x)
